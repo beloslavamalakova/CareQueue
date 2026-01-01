@@ -82,4 +82,38 @@ STATE_V_ITEMIDS = [
     220052,  # Mean Blood Pressure
 ]
 
+def get_state_vector(ce, start, end):
+    window = ce[(ce.charttime >= start) & (ce.charttime < end)]
+    state = []
+
+    for iid in STATE_V_ITEMIDS:
+        vals = window.loc[window.itemid == iid, "valuenum"]
+        state.append(vals.mean() if not vals.empty else np.nan)
+
+    return np.array(state, dtype=np.float32)
+
+# Getting the relevant actions done on patient
+
+VENTILATION_IDS = {225794} # Action label 1
+INVASIVE_LINES_IDS = {224263, 224268, 225752} # Action label 2
+U_CATHETER_IDS = {229351} # Action label 3
+IN_EX_TUBATION_IDS = {227194} # Action label 4
+DIALYSIS_IDS = {225802} # Action label 5
+
+def get_action(pe, start, end):
+    window = pe[(pe.starttime >= start) & (pe.starttime < end)]
+
+    if window.empty:
+        return 0
+    if window.itemid.isin(VENTILATION_IDS).any():
+        return 1
+    if window.itemid.isin(INVASIVE_LINES_IDS).any():
+        return 2
+    if window.itemid.isin(U_CATHETER_IDS).any():
+        return 3
+    if window.itemid.isin(IN_EX_TUBATION_IDS).any():
+        return 4
+    if window.itemid.isin(DIALYSIS_IDS).any():
+        return 5
+    return 0    
 
