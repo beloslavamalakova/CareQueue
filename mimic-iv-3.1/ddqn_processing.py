@@ -167,3 +167,35 @@ def build_transitions_for_stay(stay):
     })
 
     return transitions
+
+# Making dataframe
+
+all_transitions = []
+
+for _, stay in icustays.iterrows():
+    transitions = build_transitions_for_stay(stay)
+    all_transitions.extend(transitions)
+
+STATE_COLS = ["HR", "TEMP", "SPO2", "SBP", "DBP", "MBP"]
+
+rows = []
+
+for transition in all_transitions:
+    row = {
+        "action": transition["action"],
+        "reward": transition["reward"],
+        "done": transition["done"],
+    }
+    
+    for i, col in enumerate(STATE_COLS):
+        row[f"s_{col}"] = transition["state"][i]
+        
+    for i, col in enumerate(STATE_COLS):
+        row[f"s_next_{col}"] = transition["next_state"][i]
+    
+    rows.append(row)
+    
+transitions_df = pd.DataFrame(rows)
+
+print(transitions_df.head(20))
+
