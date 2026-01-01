@@ -23,6 +23,8 @@ icustays = pd.read_csv(
     parse_dates=["intime", "outtime"]
 )
 
+icustays = icustays.dropna(subset=["intime", "outtime"])
+
 chartevents = pd.read_csv(
     ICU_DIR / "chartevents.csv.gz",
     parse_dates=["charttime"],
