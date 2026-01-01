@@ -117,3 +117,53 @@ def get_action(pe, start, end):
         return 5
     return 0    
 
+# Now making it into the transition table format
+
+admissions_idx = admissions.set_index("hadm_id")["hospital_expire_flag"]
+
+def build_transitions_for_stay(stay):
+    stay_id = stay.stay_id
+    hadm_id = stay.hadm_id
+    
+    try:
+        died = admissions_idx.loc[hadm_id] == 1
+    except KeyError:
+        died = False
+
+    ce = chartevents[chartevents.stay_id == stay_id]
+    pe = procedureevents[procedureevents.stay_id == stay_id]
+
+    bins = make_bins(stay.intime, stay.outtime)
+    
+    if len(bins) < 2:
+        return []
+
+    states = []
+    actions = []
+
+    for i in range(len(bins) - 1):
+        s = get_state_vector(ce, bins[i], bins[i+1])
+        a = get_action(pe, bins[i], bins[i+1])
+        states.append(s)
+        actions.append(a)
+
+    transitions = []
+
+    for t in range(len(states) - 1):
+        transitions.append({
+            "state": states[t],
+            "action": actions[t],
+            "reward": 0,
+            "next_state": states[t+1],
+            "done": 0
+        })
+
+    transitions.append({
+        "state": states[-1],
+        "action": actions[-1],
+        "reward": -1 if died else 1,
+        "next_state": np.zeros_like(states[-1]),
+        "done": 1
+    })
+
+    return transitions
