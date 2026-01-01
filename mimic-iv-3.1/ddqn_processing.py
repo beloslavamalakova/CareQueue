@@ -14,6 +14,7 @@ from pathlib import Path
 BASE_DIR = Path("/home/20243009/mimic-iv-3.1")
 ICU_DIR = BASE_DIR / "icu"
 HOSP_DIR = BASE_DIR / "hosp"
+OUT_PATH = Path("sepsis_ddqn_transitions.parquet")
 
 # Picking the relevant csv files from the dataset
 
@@ -81,6 +82,8 @@ STATE_V_ITEMIDS = [
     220051,  # Diastolic Blood Pressure
     220052,  # Mean Blood Pressure
 ]
+
+STATE_COLS = ["HR", "TEMP", "SPO2", "SBP", "DBP", "MBP"]
 
 def get_state_vector(ce, start, end):
     window = ce[(ce.charttime >= start) & (ce.charttime < end)]
@@ -170,32 +173,41 @@ def build_transitions_for_stay(stay):
 
 # Making dataframe
 
-all_transitions = []
+if __name__ == "__main__":
 
-for _, stay in icustays.iterrows():
-    transitions = build_transitions_for_stay(stay)
-    all_transitions.extend(transitions)
+    print("Building transitions...")
 
-STATE_COLS = ["HR", "TEMP", "SPO2", "SBP", "DBP", "MBP"]
+    all_transitions = []
 
-rows = []
+    for i, (_, stay) in enumerate(icustays.iterrows()):
+        all_transitions.extend(build_transitions_for_stay(stay))
+        if i % 100 == 0:
+            print(f"Processed {i}/{len(icustays)} ICU stays")
 
-for transition in all_transitions:
-    row = {
-        "action": transition["action"],
-        "reward": transition["reward"],
-        "done": transition["done"],
-    }
-    
-    for i, col in enumerate(STATE_COLS):
-        row[f"s_{col}"] = transition["state"][i]
-        
-    for i, col in enumerate(STATE_COLS):
-        row[f"s_next_{col}"] = transition["next_state"][i]
-    
-    rows.append(row)
-    
-transitions_df = pd.DataFrame(rows)
 
-print(transitions_df.head(20))
+    print(f"Total transitions: {len(all_transitions)}")
 
+    print("Converting to DataFrame...")
+
+    rows = []
+
+    for tr in all_transitions:
+        row = {
+            "action": tr["action"],
+            "reward": tr["reward"],
+            "done": tr["done"]
+        }
+
+        for i, col in enumerate(STATE_COLS):
+            row[f"s_{col}"] = tr["state"][i]
+            row[f"s_next_{col}"] = tr["next_state"][i]
+
+        rows.append(row)
+
+    transitions_df = pd.DataFrame(rows)
+
+    print(transitions_df.head(10))
+    print(transitions_df["reward"].value_counts())
+
+    transitions_df.to_parquet(OUT_PATH)
+    print(f"Saved dataset to {OUT_PATH}")
