@@ -2,7 +2,7 @@ import re
 import pandas as pd
 from pathlib import Path
 
-BASE_DIR = Path("/home/beloslava/Downloads/mimic-iv-3.1")
+BASE_DIR = Path("/Users/20243322/OneDrive - TU Eindhoven/Desktop/A - honors/mimic-iv-3.1")
 ICU_DITEMS = BASE_DIR / "icu" / "d_items.csv.gz"
 HOSP_DLAB = BASE_DIR / "hosp" / "d_labitems.csv.gz"
 HOSP_PAT = BASE_DIR / "hosp" / "patients.csv.gz"

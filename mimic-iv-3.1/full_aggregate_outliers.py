@@ -3,8 +3,8 @@ import numpy as np
 import pandas as pd
 
 
-INPUT_CSV = "/home/beloslava/Downloads/mimic-iv-3.1/interim/patient_feature_matrix_top5.csv"
-OUT_CSV   = "/home/beloslava/Downloads/mimic-iv-3.1/interim/full_aggregated.csv"
+INPUT_CSV = "/Users/20243322/OneDrive - TU Eindhoven/Desktop/A - honors/mimic-iv-3.1/interim/patient_feature_matrix_top5.csv"
+OUT_CSV   = "/Users/20243322/OneDrive - TU Eindhoven/Desktop/A - honors/mimic-iv-3.1/interim/full_aggregated.csv"
 
 # Percentiles for outlier detection
 LOW_Q  = 0.01

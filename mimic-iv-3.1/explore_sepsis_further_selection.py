@@ -2,7 +2,7 @@ import re
 import pandas as pd
 from pathlib import Path
 
-BASE_DIR = Path("/home/beloslava/Downloads/mimic-iv-3.1")
+BASE_DIR = Path("/Users/20243322/OneDrive - TU Eindhoven/Desktop/A - honors/mimic-iv-3.1")
 IN_PATH = BASE_DIR / "interim" / "feature_itemid_candidates.csv"
 OUT_BEST = BASE_DIR / "interim" / "feature_itemid_best.csv"
 OUT_TOP5 = BASE_DIR / "interim" / "feature_itemid_top5.csv"

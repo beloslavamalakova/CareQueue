@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 
-MIMIC_ROOT = "/home/beloslava/Downloads/mimic-iv-3.1"
+MIMIC_ROOT = "/Users/20243322/OneDrive - TU Eindhoven/Desktop/A - honors/mimic-iv-3.1"
 TOP5_PATH  = os.path.join(MIMIC_ROOT, "interim", "feature_itemid_top5.csv")
 
 ICU_CHARTEVENTS = os.path.join(MIMIC_ROOT, "icu", "chartevents.csv.gz")

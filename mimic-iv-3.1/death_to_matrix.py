@@ -1,6 +1,6 @@
 import pandas as pd
 
-MIMIC_ROOT = "/home/beloslava/Desktop/CareQueue/mimic-iv-3.1/"
+MIMIC_ROOT = "/Users/20243322/OneDrive - TU Eindhoven/Desktop/A - honors/mimic-iv-3.1"
 
 X_PATH = f"{MIMIC_ROOT}/interim/full_aggregated.csv"          # your patient matrix (strings: "nan"/"dropped")
 PAT_PATH = f"{MIMIC_ROOT}/hosp/patients.csv.gz"

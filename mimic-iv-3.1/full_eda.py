@@ -1,8 +1,8 @@
 import os
 import pandas as pd
 
-IN_CSV = "/home/beloslava/Desktop/CareQueue/mimic-iv-3.1/interim/full_aggregated.csv"
-OUT_SUMMARY_CSV = "/home/beloslava/Desktop/CareQueue/mimic-iv-3.1/interim/full_eda_summary.csv"
+IN_CSV = "/Users/20243322/OneDrive - TU Eindhoven/Desktop/A - honors/mimic-iv-3.1/interim/full_aggregated.csv"
+OUT_SUMMARY_CSV = "/Users/20243322/OneDrive - TU Eindhoven/Desktop/A - honors/mimic-iv-3.1/interim/full_eda_summary.csv"
 
 MISSING_TOKEN = "nan"
 DROPPED_TOKEN = "dropped"

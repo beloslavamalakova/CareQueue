@@ -22,6 +22,7 @@ import argparse
 import os
 from pathlib import Path
 import duckdb
+import pandas as pd
 
 
 def pick_existing(*candidates: str) -> str:
@@ -42,6 +43,8 @@ def main():
     ap.add_argument("--cache-dir", default="./cache", help="Output cache directory")
     ap.add_argument("--itemids-file", default=None,
                     help="Optional text file with one itemid per line to FILTER to (keeps output small)")
+    ap.add_argument("--top5-csv", default=None,
+                    help="Path to interim/feature_itemid_top5.csv. If set, itemids are derived from it (preferred).")
     args = ap.parse_args()
 
     root = Path(args.root).resolve()
@@ -64,15 +67,47 @@ def main():
     bins_out = str(cache_dir / f"bins_{args.bin_hours}h.parquet")
     events_out = str(cache_dir / f"events_{args.bin_hours}h_long.parquet")
 
-    # Optional itemid filter (strongly recommended for very large runs)
-    itemids = None
-    if args.itemids_file:
+    # Optional itemid filters (recommended for very large runs)
+    # We support either:
+    #   A) --top5-csv (preferred): derive ICU vs LAB itemids from feature_itemid_top5.csv
+    #   B) --itemids-file: one shared list (legacy)
+    icu_itemids = None
+    lab_itemids = None
+
+    if args.top5_csv:
+        p = Path(args.top5_csv)
+        if not p.exists():
+            raise FileNotFoundError(f"--top5-csv not found: {p}")
+
+        top5 = pd.read_csv(p)
+
+        required = {"source", "id_type", "id"}
+        missing = required - set(top5.columns)
+        if missing:
+            raise ValueError(f"top5-csv missing columns: {missing}. Found: {list(top5.columns)}")
+
+        # keep only numeric itemids
+        top5 = top5[top5["id_type"].astype(str).str.lower() == "itemid"].copy()
+        top5["id_num"] = pd.to_numeric(top5["id"], errors="coerce")
+        top5 = top5.dropna(subset=["id_num"])
+        top5["id_num"] = top5["id_num"].astype(int)
+
+        icu_itemids = sorted(top5.loc[top5["source"] == "icu/d_items", "id_num"].unique().tolist())
+        lab_itemids = sorted(top5.loc[top5["source"] == "hosp/d_labitems", "id_num"].unique().tolist())
+
+        if not icu_itemids and not lab_itemids:
+            raise ValueError("top5-csv loaded, but no usable itemids found for ICU or LAB sources.")
+
+    elif args.itemids_file:
         p = Path(args.itemids_file)
         if not p.exists():
             raise FileNotFoundError(f"--itemids-file not found: {p}")
-        itemids = [line.strip() for line in p.read_text().splitlines() if line.strip().isdigit()]
-        if not itemids:
+        ids = [line.strip() for line in p.read_text().splitlines() if line.strip().isdigit()]
+        if not ids:
             raise ValueError("itemids-file provided but no valid numeric itemids found.")
+        # legacy: same list used everywhere
+        icu_itemids = [int(x) for x in ids]
+        lab_itemids = [int(x) for x in ids]
 
     con = duckdb.connect()
     con.execute(f"PRAGMA threads={int(args.threads)};")
@@ -137,8 +172,8 @@ def main():
     # We avoid pulling text columns (value) to keep size reasonable.
     # We keep valuenum and time. Aggregations per stay/bin/itemid.
     itemid_filter_sql = ""
-    if itemids:
-        itemid_filter_sql = f"AND itemid IN ({','.join(itemids)})"
+    if icu_itemids:
+        itemid_filter_sql = f"AND c.itemid IN ({','.join(map(str, icu_itemids))})"
 
     con.execute(f"""
     CREATE OR REPLACE TEMP VIEW chart_binned AS
