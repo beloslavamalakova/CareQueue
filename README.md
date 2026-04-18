@@ -180,11 +180,14 @@ Patient data is aggregated into **4-hour time bins**, where each bin represents 
 - Temperature  
 - Oxygen saturation  
 
+These features are extracted from MIMIC-IV and aggregated using DuckDB for efficient large-scale processing.
+
 ---
 
 ### 🔹 Step 2: Transition Dataset
 
 Each patient trajectory is converted into:
+
 (s, a, r, s')
 
 - **s** → current patient state  
@@ -192,59 +195,88 @@ Each patient trajectory is converted into:
 - **r** → outcome-based reward  
 - **s'** → next state  
 
----
+Rewards are defined as:
+- +1 → patient survives  
+- -1 → patient dies  
+- 0 → intermediate steps  
 
-### 🔹 Step 3: BCQ Training (Core Logic)
-
-BCQ combines **behavior cloning + Q-learning**, with a constraint on allowed actions.
-
-#### 1. Behavior Cloning Network
-Learns clinician policy:
-π(a | s)
+This transition dataset is shared across all RL models.
 
 ---
 
-#### 2. Q-Network
-Learns:
-Q(s, a)
+### 🔹 Step 3: Model Training
+
+Different RL algorithms are trained on the same transition dataset:
 
 ---
 
-#### 3. BCQ Constraint Mechanism (Key Idea)
+#### BCQ (Batch-Constrained Q-Learning)
 
-Only allows actions that are likely under the behavior policy:
-π(a | s) > τ
-Then selects:
-max_a Q(s', a) (only over allowed actions)
+BCQ combines **behavior cloning + Q-learning** to ensure safe offline learning.
 
+- Learns a policy π(a|s) from clinician behavior  
+- Learns Q(s,a) using Bellman updates  
+- Restricts actions to those likely under the dataset:
+  
+  π(a|s) > τ  
 
-This prevents unrealistic or unsafe decisions — crucial for healthcare.
+- Only allowed actions are considered when computing targets  
+
+➡️ Prevents unrealistic or unsafe actions (important for healthcare)
 
 ---
 
-#### 4. Training Details
+#### IQL (Implicit Q-Learning)
 
-- Streaming batches from Parquet (memory efficient)  
-- Separate optimizers for:
-  - BC network  
-  - Q network  
-- Target network for stability  
-- Class-weighted BC loss (handles action imbalance)  
+IQL avoids explicit behavior cloning constraints and instead uses **value-based weighting**.
+
+- Learns:
+  - Q-function Q(s,a)  
+  - Value function V(s)  
+- Uses **expectile regression** to estimate V(s)  
+- Updates policy using **advantage-weighted regression**:
+  
+  Advantage = Q(s,a) - V(s)
+
+➡️ Focuses on learning from high-quality actions without requiring action filtering
+
+---
+
+#### DDQN (Double Deep Q-Network)
+
+DDQN is a value-based RL algorithm adapted for offline data.
+
+- Learns Q(s,a) using neural networks  
+- Uses a **target network** to stabilize training  
+- Reduces overestimation bias compared to standard DQN  
+- Selects actions using:
+  
+  max_a Q(s,a)
+
+➡️ Simpler than BCQ/IQL but more prone to extrapolation error in offline settings
 
 ---
 
 ### 🔹 Step 4: Evaluation
 
-Per epoch, the model logs:
+Models are evaluated using offline metrics and training diagnostics.
+
+#### BCQ
 - Behavior cloning loss  
 - Q-learning loss  
 
-Saved to: 
-metrics.csv
+#### IQL
+- FQE (Fitted Q Evaluation)  
+- KL divergence vs clinician policy  
+- CWPDIS  
 
-Plots generated using: 
-plots.py
+#### DDQN
+- Q-loss convergence  
+- Reward distribution analysis  
 
+Outputs include:
+- metrics.csv (training logs)  
+- plots (loss curves and evaluation results)
 
 ---
 
@@ -269,13 +301,19 @@ Download MIMIC-IV V 3.1
 
 ## 7. Usage
 
-Step 1: Build States
+### Step 1: Build States
+
 python build_states_duckdb.py
 
-Step 2: Build Transitions
+### Step 2: Build Transitions
+
 python build_transitions_table.py
 
-Step 3: Train BCQ
+This creates the dataset used by all models.
+
+### Step 3: Train Models
+
+Train BCQ:
 
 ```
 python bcq_end2end.py \
@@ -283,10 +321,40 @@ python bcq_end2end.py \
   --outdir cache/bcq_run
 ```
 
-Step 4: Plot Results
-python plots.py --run_dir cache/bcq_run
+Train IQL:
 
----
+```
+python iql_training.py \
+  --data cache/transitions_4h.parquet \
+  --save_dir output/iql_run
+```
+
+(Optional: run sweeps)
+python run_sweep.py
+
+Train DDQN
+
+```
+python ddqn_processing_2.py
+```
+
+
+### Step 4: Evaluate / Visualize Results
+
+BCQ
+```
+python plots.py --run_dir cache/bcq_run
+```
+
+IQL
+```
+python eval_iql_metrics.py
+python iql_plots.py
+```
+
+DDQN
+
+Evaluation is currently embedded in processing and output inspection.
 
 ## 8. Testing
 
@@ -300,13 +368,13 @@ Queing system for simulation of patient arrivals
 
 This is a project developed by Honors Academy AI track students at TU Eindhoven:
 
-Ayush Jain
+- Ayush Jain
 
-Beloslava Malakova
+- Beloslava Malakova
 
-Anusha Astana
+- Anusha Astana
 
-Julia Kryłowicz
+- Julia Kryłowicz
 
 ## 11.Documentation / References
 
