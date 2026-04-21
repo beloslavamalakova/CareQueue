@@ -36,8 +36,8 @@ from torch.utils.data import Dataset, DataLoader
 @dataclass
 class IQLConfig:
     gamma: float = 0.99
-    expectile_tau: float = 0.6
-    awr_beta: float = 2.0
+    expectile_tau: float = 0.65 #Ideally bewteen 0.6 and 0.7
+    awr_beta: float = 3.0 #Ideally should be 3
     awr_clip: float = 100.0
 
     lr_q: float = 5e-5
@@ -49,7 +49,7 @@ class IQLConfig:
     epochs: int = 30
     num_workers: int = 2
 
-    hidden: int = 256
+    hidden: int = 256 #Ideally 128
     dropout: float = 0.0
 
     # Target critics (EMA)
@@ -428,7 +428,7 @@ def train_iql_discrete(df: pd.DataFrame, cfg: IQLConfig, save_dir: str) -> None:
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser()
-    p.add_argument("--data", type=str, default=r"...\Processed\sepsis_lite_transitions_4h.parquet", help="Path to parquet transitions dataset")
+    p.add_argument("--data", type=str, default=r"C:\Users\20231942\Desktop\Central Folder\TUe\Year 3\Honors\Code\CareQueue\mimic-iv-3.1\iql\Version 3\Processed\transitions.parquet", help="Path to parquet transitions dataset")
     p.add_argument("--save_dir", type=str, default="Output", help="Output directory for checkpoints")
 
     p.add_argument("--epochs", type=int, default=30)
