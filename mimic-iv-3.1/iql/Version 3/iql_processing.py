@@ -13,6 +13,7 @@ Action space (0..5) is procedure-based:
   3: itemid 229351
   4: itemid 227194
   5: itemid 225802
+`
 
 State features are 4h-bin averages from chartevents:
   HR(220045), TEMP(223762), SPO2(220277), SBP(220050), DBP(220051), MBP(220052)
@@ -189,7 +190,7 @@ def build_transitions(con: duckdb.DuckDBPyConnection, base: Path, state_file: Pa
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--base", type=str, default= r"C:\Users\20231942\Desktop\Central Folder\TUe\Year 3\Honors\Data Processing\mimic\raw", help="Path to mimic-iv-3.1 directory")
-    ap.add_argument("--out", type=str, default= r"C:\Users\20231942\Desktop\Central Folder\TUe\Year 3\Honors\Code\CareQueue\mimic-iv-3.1\iql\Version 2\Processed", help="Output transitions parquet path")
+    ap.add_argument("--out", type=str, default= r"C:\Users\20231942\Desktop\Central Folder\TUe\Year 3\Honors\Code\CareQueue\mimic-iv-3.1\iql\Version 3\Processed\transitions.parquet", help="Output transitions parquet path")
     ap.add_argument("--bin_hours", type=int, default=4, help="Time bin size in hours (default 4)")
     ap.add_argument("--threads", type=int, default=8, help="DuckDB threads")
     ap.add_argument("--mem_limit", type=str, default="8GB", help="DuckDB memory limit, e.g. 8GB, 32GB")
