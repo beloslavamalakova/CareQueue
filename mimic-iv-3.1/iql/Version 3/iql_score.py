@@ -91,7 +91,7 @@ def score_initial_patients(
         patient_df["predicted_value"] = v(x_t).squeeze(-1).cpu().numpy()
 
     # Flags based on your requested interpretation
-    patient_df["predicted_worse"] = (patient_df["predicted_value"] < -0.5).astype(int)
+    patient_df["predicted_worse"] = (patient_df["predicted_value"] < -50).astype(int)
 
     # Summary metrics
     summary = pd.DataFrame([{

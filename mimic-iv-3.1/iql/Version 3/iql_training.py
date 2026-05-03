@@ -24,6 +24,7 @@ import os
 from dataclasses import dataclass
 from typing import Dict, List, Tuple
 
+import hashlib
 import numpy as np
 import pandas as pd
 import torch
@@ -49,7 +50,7 @@ class IQLConfig:
     epochs: int = 30
     num_workers: int = 2
 
-    hidden: int = 256 #Ideally 128
+    hidden: int = 128 #Ideally 128
     dropout: float = 0.0
 
     # Target critics (EMA)
@@ -97,6 +98,23 @@ def infer_columns_discrete(df: pd.DataFrame) -> Tuple[List[str], List[str]]:
     state_cols.sort()
     next_state_cols.sort()
     return state_cols, next_state_cols
+
+def stable_unit_hash(value: object) -> float:
+    h = hashlib.sha1(str(value).encode("utf-8")).hexdigest()
+    return int(h[:15], 16) / float(16**15 - 1)
+
+def split_by_stay_id(df: pd.DataFrame, val_frac: float):
+    if "stay_id" not in df.columns:
+        raise ValueError("Expected a 'stay_id' column for stay-level splitting.")
+
+    unique_stays = pd.Series(df["stay_id"].dropna().unique())
+    val_stays = set(unique_stays[unique_stays.map(stable_unit_hash) < val_frac].tolist())
+
+    val_mask = df["stay_id"].isin(val_stays)
+    train_df = df.loc[~val_mask].reset_index(drop=True)
+    val_df = df.loc[val_mask].reset_index(drop=True)
+
+    return train_df, val_df
 
 
 # Dataset
@@ -239,15 +257,7 @@ def train_iql_discrete(df: pd.DataFrame, cfg: IQLConfig, save_dir: str) -> None:
     n_actions = a_max + 1
 
     # Split
-    n = len(df)
-    idx = np.arange(n)
-    np.random.shuffle(idx)
-    n_val = int(cfg.val_frac * n)
-    val_idx = idx[:n_val]
-    tr_idx = idx[n_val:]
-
-    df_tr = df.iloc[tr_idx].reset_index(drop=True)
-    df_va = df.iloc[val_idx].reset_index(drop=True)
+    df_tr, df_va = split_by_stay_id(df, val_frac=cfg.val_frac)
 
     # Normalization from train only
     s_mean, s_std = compute_norm_stats(df_tr, state_cols)
@@ -433,7 +443,7 @@ def parse_args() -> argparse.Namespace:
 
     p.add_argument("--epochs", type=int, default=30)
     p.add_argument("--batch_size", type=int, default=1024)
-    p.add_argument("--hidden", type=int, default=256)
+    p.add_argument("--hidden", type=int, default=128)
 
     p.add_argument("--gamma", type=float, default=0.99)
     p.add_argument("--expectile_tau", type=float, default=0.7)
@@ -442,8 +452,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
     p.add_argument("--val_frac", type=float, default=0.1)
 
-    p.add_argument("--use_target_q", action="store_true", help="Use EMA target Q networks (recommended)")
-    p.add_argument("--tau_target", type=float, default=0.005)
+    p.add_argument("--no_target_q", action="store_true", help="Disable EMA target Q networks")
+    p.add_argument("--tau_target", type=float, default=0.001)
     return p.parse_args()
 
 
@@ -459,8 +469,8 @@ def main():
         seed=args.seed,
         device=args.device,
         val_frac=args.val_frac,
-        use_target_q=args.use_target_q,
-        tau_target=args.tau_target,
+        use_target_q=not args.no_target_q,
+        tau_target=args.tau_target
     )
 
     print(f"Loading parquet: {args.data}")
