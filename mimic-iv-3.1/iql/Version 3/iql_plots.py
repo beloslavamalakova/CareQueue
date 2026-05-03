@@ -17,7 +17,7 @@ def minmax_01(series):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--log", default=r"C:\Users\20231942\Desktop\Central Folder\TUe\Year 3\Honors\Code\CareQueue\mimic-iv-3.1\iql\Version 3\perfected_train.log", help="Path to training log (.out or .log)")
+    ap.add_argument("--log", default=r"C:\Users\20231942\Desktop\Central Folder\TUe\Year 3\Honors\Code\CareQueue\mimic-iv-3.1\iql\Version 3\train.log", help="Path to training log (.out or .log)")
     ap.add_argument("--outdir", default=None, help="Where to save pngs (default: same folder as log)")
     args = ap.parse_args()
 
