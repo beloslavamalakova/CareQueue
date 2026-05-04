@@ -25,7 +25,7 @@ which estimates the expected future outcome from a state.
 This script:
 1. Extracts the **first state (initial ICU condition)** for each patient
 2. Computes \( V(s_0) \)
-3. Uses this as a **patient-level score**
+3. Uses this as a model predicted **patient-level score**
 
 ---
 
@@ -82,11 +82,18 @@ Contains:
 
 ### Step 7 — Compute Predicted Value
 
-### Step 8 — Create Comparison Interpretation Metrics
+### Step 8 - Select the bottom 10% of patients with the lowest predicted values
 
-High Probability of Mortality: predicted_worse = (predicted_value < -50)
--100 → predicted poor outcome
-+100 → predicted better outcome
+### Step 9 — Create Comparison Interpretation Metrics
+
+Predicted survival probability:
+p_survival = (predicted_value / 100 + 1) / 2
+
+-100 → 0% survival
++100 → 100% survival
+
+Bottom 10% highest-risk patients:
+Patients with the lowest predicted_value (bottom 10%).
 
 Outputs:
 Patient-level Scores
@@ -96,7 +103,10 @@ Columns:
 
 n_patients
 mean_predicted_value
-pct_predicted_value_below_neg_50
+pct_survival_bottom_10_worst_patients
+
+The reported percentage represents the average predicted survival probability
+of the bottom 10% highest-risk patients according to the model.
 
 
 ## Applying This to Other Models
