@@ -90,21 +90,35 @@ def score_initial_patients(
         x_t = torch.from_numpy(X).to(device)
         patient_df["predicted_value"] = v(x_t).squeeze(-1).cpu().numpy()
 
-    # Flags based on your requested interpretation
-    patient_df["predicted_worse"] = (patient_df["predicted_value"] < -50).astype(int)
+    # Convert predicted value to approximate survival probability
+    # Assumes reward scale: death = -100, survival = +100
+    patient_df["p_survival"] = (patient_df["predicted_value"] / 100 + 1) / 2
+
+    # Bottom 10% worst patients = patients with the lowest predicted values
+    bottom_10_threshold = patient_df["predicted_value"].quantile(0.10)
+    bottom_10_df = patient_df[patient_df["predicted_value"] <= bottom_10_threshold]
+
+    # Percentage survival of the bottom 10% worst patients
+    pct_survival_bottom_10 = 100 * bottom_10_df["p_survival"].mean()
+
+    # Optional flag for patient-level CSV
+    patient_df["bottom_10_worst"] = (
+        patient_df["predicted_value"] <= bottom_10_threshold
+    ).astype(int)
 
     # Summary metrics
     summary = pd.DataFrame([{
         "n_patients": int(len(patient_df)),
         "mean_predicted_value": float(patient_df["predicted_value"].mean()),
-        "pct_predicted_value_below_neg_0_5": float(100 * patient_df["predicted_worse"].mean()),
+        "pct_survival_bottom_10_worst_patients": float(pct_survival_bottom_10),
     }])
 
     # Return both patient-level and summary-level outputs
     return patient_df[[
         "stay_id",
         "predicted_value",
-        "predicted_worse",
+        "p_survival",
+        "bottom_10_worst",
     ]], summary
 
 
