@@ -1,1 +1,7 @@
 .venv/
+mimic-iv-3.1/cache/events_4h_long.parquet
+
+mimic-iv-3.1/cache/
+*.parquet
+*.pt
+*.csv.gz
