@@ -269,7 +269,7 @@ Models are evaluated using offline metrics and training diagnostics.
 - CWPDIS  
 
 #### DDQN
-- Q-loss convergence  
+- BC, Q-loss convergence  
 - Reward distribution analysis  
 
 Outputs include:
@@ -333,7 +333,9 @@ python run_sweep.py
 Train DDQN
 
 ```
-python final_ddqn.py
+python final_ddqn.py \
+  --inp sepsis_iql_actionvec_transitions.parquet
+  --outdir ddqn_outputs
 ```
 
 
@@ -353,7 +355,7 @@ python iql_plots.py
 DDQN
 
 ```
-metrics.csv
+python graph.py
 ```
 
 ## 8. Testing
