@@ -1,0 +1,32 @@
+Loading parquet: ./Processed/transitions.parquet
+[Epoch 001/30] train q=288.5230 bc=2.0184 acc=0.3804 | val q=271.7373 bc=1.8754 acc=0.3669
+[Epoch 002/30] train q=256.3432 bc=1.8266 acc=0.3897 | val q=240.1991 bc=1.8599 acc=0.3687
+[Epoch 003/30] train q=236.1842 bc=1.8158 acc=0.3911 | val q=225.4638 bc=1.8541 acc=0.3700
+[Epoch 004/30] train q=224.0296 bc=1.8123 acc=0.3919 | val q=217.6051 bc=1.8525 acc=0.3713
+[Epoch 005/30] train q=215.5274 bc=1.8112 acc=0.3922 | val q=211.5711 bc=1.8525 acc=0.3712
+[Epoch 006/30] train q=209.7318 bc=1.8105 acc=0.3923 | val q=206.4704 bc=1.8522 acc=0.3713
+[Epoch 007/30] train q=205.4423 bc=1.8101 acc=0.3924 | val q=202.3954 bc=1.8517 acc=0.3715
+[Epoch 008/30] train q=201.5886 bc=1.8096 acc=0.3925 | val q=199.4307 bc=1.8536 acc=0.3712
+[Epoch 009/30] train q=199.0723 bc=1.8091 acc=0.3926 | val q=197.2035 bc=1.8512 acc=0.3719
+[Epoch 010/30] train q=197.3575 bc=1.8088 acc=0.3924 | val q=195.5081 bc=1.8510 acc=0.3716
+[Epoch 011/30] train q=195.9383 bc=1.8083 acc=0.3927 | val q=194.3326 bc=1.8510 acc=0.3718
+[Epoch 012/30] train q=194.9248 bc=1.8080 acc=0.3926 | val q=193.3789 bc=1.8497 acc=0.3721
+[Epoch 013/30] train q=194.0720 bc=1.8075 acc=0.3926 | val q=192.7018 bc=1.8509 acc=0.3713
+[Epoch 014/30] train q=193.7330 bc=1.8072 acc=0.3927 | val q=192.0201 bc=1.8513 acc=0.3714
+[Epoch 015/30] train q=192.9048 bc=1.8069 acc=0.3927 | val q=191.4525 bc=1.8498 acc=0.3721
+[Epoch 016/30] train q=192.3561 bc=1.8065 acc=0.3926 | val q=191.0853 bc=1.8501 acc=0.3718
+[Epoch 017/30] train q=191.9848 bc=1.8062 acc=0.3927 | val q=190.6952 bc=1.8500 acc=0.3720
+[Epoch 018/30] train q=191.6842 bc=1.8059 acc=0.3927 | val q=190.4671 bc=1.8490 acc=0.3721
+[Epoch 019/30] train q=191.3132 bc=1.8057 acc=0.3928 | val q=190.2010 bc=1.8483 acc=0.3723
+[Epoch 020/30] train q=191.2083 bc=1.8053 acc=0.3927 | val q=189.8849 bc=1.8489 acc=0.3724
+[Epoch 021/30] train q=190.7591 bc=1.8051 acc=0.3928 | val q=189.7380 bc=1.8487 acc=0.3720
+[Epoch 022/30] train q=190.6054 bc=1.8048 acc=0.3929 | val q=189.5254 bc=1.8479 acc=0.3723
+[Epoch 023/30] train q=190.4564 bc=1.8047 acc=0.3929 | val q=189.3242 bc=1.8478 acc=0.3726
+[Epoch 024/30] train q=190.2217 bc=1.8045 acc=0.3929 | val q=189.1606 bc=1.8484 acc=0.3722
+[Epoch 025/30] train q=190.0663 bc=1.8043 acc=0.3929 | val q=189.0176 bc=1.8486 acc=0.3728
+[Epoch 026/30] train q=189.9564 bc=1.8041 acc=0.3929 | val q=188.8264 bc=1.8474 acc=0.3725
+[Epoch 027/30] train q=189.6635 bc=1.8040 acc=0.3930 | val q=188.7502 bc=1.8481 acc=0.3727
+[Epoch 028/30] train q=189.5280 bc=1.8038 acc=0.3930 | val q=188.7034 bc=1.8497 acc=0.3716
+[Epoch 029/30] train q=189.6045 bc=1.8037 acc=0.3930 | val q=188.6432 bc=1.8482 acc=0.3726
+[Epoch 030/30] train q=189.1851 bc=1.8037 acc=0.3931 | val q=188.6923 bc=1.8476 acc=0.3723
+Saved checkpoints and metrics to ./Output
