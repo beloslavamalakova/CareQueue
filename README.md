@@ -134,7 +134,7 @@ iql/
 ### DDQN
 
 ```
-ddqn\
+ddqn/
 ├── ddqn_processing.py
 ├── ddqn_processing_2.py
 ├── final_ddqn.py
