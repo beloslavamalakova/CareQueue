@@ -137,8 +137,8 @@ iql/
 ddqn\
 ├── ddqn_processing.py
 ├── ddqn_processing_2.py
-├── build_states_duckdb.py
-├── build_transitions_table.py
+├── final_ddqn.py
+├── graph.py
 ```
 ### Core Files
 
@@ -155,18 +155,16 @@ ddqn\
   - Handles large datasets using chunked processing  
   - Reduces memory usage for HPC environments  
 
-- **build_states_duckdb.py**
-  - Aggregates raw ICU data into structured state vectors  
-  - Uses DuckDB for fast large-scale processing  
-  - Produces features like HR, BP, SpO2 per time bin  
+- **final_ddqn.py**
+  - Contains the final DDQN model used for project  
+  - 25 discrete actions, state space dimension of 38
+  - Contains a main ("online") network, and a target network
+  - Target network updated periodically, classic DDQN  
 
-- **build_transitions_table.py**
-  - Constructs full `(s, a, r, s')` transition dataset  
-  - Uses SQL joins to align:
-    - States
-    - Actions (procedures)
-    - Outcomes (rewards)  
-  - Outputs data in Parquet format for training  
+- **graph.py**
+  - Graphs plots based on losses computed in training script
+  - Shows validation behaviour cloning loss over 30 epochs
+  - Shows validation Q-Bellman loss over 30 epochs
 
 ---
 
@@ -335,7 +333,7 @@ python run_sweep.py
 Train DDQN
 
 ```
-python ddqn_processing_2.py
+python final_ddqn.py
 ```
 
 
@@ -354,7 +352,9 @@ python iql_plots.py
 
 DDQN
 
-Evaluation is currently embedded in processing and output inspection.
+```
+metrics.csv
+```
 
 ## 8. Testing
 
