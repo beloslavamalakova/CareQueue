@@ -2,3 +2,6 @@
 /icu/
 *.csv
 *.gz
+!ddqn_patient_scores_10000.csv
+!ddqn_patient_summary_10000.csv
+!metrics.csv
