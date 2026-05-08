@@ -1,12 +1,12 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-df = pd.read_csv('metrics.csv')
+df = pd.read_csv(r"C:\Users\20243009\CareQueue\mimic-iv-3.1\ddqn\outputs\metrics.csv")
 
 for col in ['val_bc', 'val_q']:
     df[col] = (df[col] - df[col].min()) / (df[col].max() - df[col].min())
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
 
 ax1.plot(df['epoch'], df['val_bc'], marker='o')
 ax1.set_title('Normalised Validation Behaviour Cloning Loss')
