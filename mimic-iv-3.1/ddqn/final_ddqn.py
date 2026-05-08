@@ -35,9 +35,7 @@ Defining the states in the action space
 # We have 6 vitals that we would like to monitor, namely, 
 # heart rate, temperature, oxygen, systolic/diastolic/mean blood pressure
 STATE_NAMES = ["HR", "TEMP", "SPO2", "SBP", "DBP", "MBP"]
-#STATE_SUMMARIES = ["mean", "min", "max", "std", "last", "trend"]
 
-#S_VITALS_COLS = [f"s_{name}_{s}" for name in STATE_NAMES for s in STATE_SUMMARIES]
 S_VITALS_COLS = [f"s_{name}" for name in STATE_NAMES]
 S_DEMO_COLS = ["s_age", "s_sex"] # demo stands for demographic, age and sex have been added now as demographic features
 S_COLS = S_VITALS_COLS + S_DEMO_COLS
