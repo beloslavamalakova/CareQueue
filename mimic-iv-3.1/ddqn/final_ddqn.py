@@ -15,6 +15,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from sklearn.model_selection import train_test_split
+import json
 
 """
 Pick device depending on what is available
@@ -125,7 +126,7 @@ s_cols: current state columns
 s2_cols: next state columns
 """
 
-def fill_buffer(df: pd.DataFrame, buf: ReplayBuffer, s_cols, s2_cols) -> None:
+def fill_buffer(df: pd.DataFrame, buf: ReplayBuffer, s_cols, s2_cols):
     features = s_cols + s2_cols
     df = df.copy()
     
@@ -136,6 +137,12 @@ def fill_buffer(df: pd.DataFrame, buf: ReplayBuffer, s_cols, s2_cols) -> None:
     mu = df[features].mean()
     sd = df[features].std() + 1e-6
     df[features] = (df[features] - mu) / sd
+    
+    # getting s_mean, s_std, sp_mean, sp_std for schema
+    s_mean = mu[s_cols].values.astype(np.float32)
+    s_std = sd[s_cols].values.astype(np.float32)
+    sp_mean = mu[s2_cols].values.astype(np.float32)
+    sp_std = sd[s2_cols].values.astype(np.float32)
 
     num_rows = len(df)
     buf.s[:num_rows]  = df[s_cols].values.astype(np.float32)
@@ -147,6 +154,8 @@ def fill_buffer(df: pd.DataFrame, buf: ReplayBuffer, s_cols, s2_cols) -> None:
     buf.ptr  = num_rows % buf.size
     buf.full = num_rows >= buf.size
     print(f"Direct Buffer Fill: Loaded {num_rows} transitions.")
+    
+    return s_mean, s_std, sp_mean, sp_std
 
 
 """
@@ -160,7 +169,7 @@ Main training loop:
 
 def main():
     DATA = os.environ.get("DATA_PATH", "sepsis_iql_actionvec_transitions.parquet")
-    OUT = Path(os.environ.get("OUT_DIR", "ddqn_run"))
+    OUT = Path(os.environ.get("OUT_DIR", "ddqn_outputs"))
     OUT.mkdir(parents=True, exist_ok=True)
 
     df = pd.read_parquet(DATA)
@@ -171,7 +180,7 @@ def main():
     train_buf = ReplayBuffer(STATE_DIM, len(train_df), DEVICE)
     val_buf = ReplayBuffer(STATE_DIM, len(val_df), DEVICE)
 
-    fill_buffer(train_df, train_buf, S_COLS, S2_COLS)
+    s_mean, s_std, sp_mean, sp_std = fill_buffer(train_df, train_buf, S_COLS, S2_COLS)
     fill_buffer(val_df, val_buf, S_COLS, S2_COLS)
 
     # main and target networks start with same weights
@@ -227,10 +236,24 @@ def main():
         # save best checkpoint, it has the best val DDQN loss so far
         if val_q < best_val_q:
             best_val_q = val_q
-            torch.save(q.state_dict(), OUT / "ddqn_model_best.pt")
+            torch.save({"q": q.state_dict(), "config": {"hidden": 256}}, OUT / "ddqn_model_best.pt")
 
     f.close()
-    torch.save(q.state_dict(), OUT / "ddqn_model_final.pt")
+    torch.save({"q": q.state_dict(), "config": {"hidden": 256}}, OUT / "ddqn_model_final.pt")
+    
+    # save schema + norm stats for evaluating DDQN score
+    schema = {
+        "state_cols": S_COLS,
+        "next_state_cols": S2_COLS,
+        "action_col": "action",
+        "n_actions": 25,
+        "state_mean": s_mean.tolist(),
+        "state_std": s_std.tolist(),
+        "next_state_mean": sp_mean.tolist(),
+        "next_state_std": sp_std.tolist(),
+    }
+    with open(os.path.join(OUT, "schema_and_norm.json"), "w") as fs:
+        json.dump(schema, fs, indent=2)
 
 
 if __name__ == "__main__":
