@@ -118,7 +118,7 @@ def ddqn_loss(q, q_tgt, batch, gamma):
 """
 Filling the Replay Buffer:
 Since we have a static dataset, we can directly fill the replay buffer from the parquet file.
-Some preprocessing: normalise state values so that they are between 0 and 1, missing values are replaced with 0
+Some preprocessing: normalise state values, missing values are replaced with 0
 df: dataframe containing the transition style columns, state, next state, action, reward, done
 buf: Replay Buffer
 s_cols: current state columns
