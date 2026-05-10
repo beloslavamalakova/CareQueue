@@ -391,8 +391,8 @@ def build_transitions(con, base, state_file, out_file, bin_hours):
       CASE WHEN s.next_bin IS NULL THEN 1 ELSE 0 END::INTEGER AS done,
 
       CASE
-        WHEN s.next_bin IS NULL AND COALESCE(adm.hospital_expire_flag, 0) = 1 THEN -1.0
-        WHEN s.next_bin IS NULL AND COALESCE(adm.hospital_expire_flag, 0) = 0 THEN  1.0
+        WHEN s.next_bin IS NULL AND COALESCE(adm.hospital_expire_flag, 0) = 1 THEN -100.0
+        WHEN s.next_bin IS NULL AND COALESCE(adm.hospital_expire_flag, 0) = 0 THEN  100.0
         ELSE 0.0
       END::DOUBLE AS reward
 
