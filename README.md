@@ -135,25 +135,25 @@ iql/
 
 ```
 ddqn/
-├── ddqn_processing.py
-├── ddqn_processing_2.py
+ └── other
+    ├── ddqn_processing.py
+    ├── ddqn_processing_2.py
+ └── outputs
+ └── score
+├── 25_SOFA2_preprocessing.py
+├── ddqn_score.py
 ├── final_ddqn.py
 ├── graph.py
 ```
 ### Core Files
 
-- **ddqn_processing.py**
-  - Builds transition dataset for DDQN training  
-  - Filters MIMIC-IV data to a sepsis patient cohort  
-  - Constructs states using time bins  
-  - Defines:
-    - Actions (clinical procedures)
-    - Rewards (+1 survival, -1 death)
+- **25_SOFA2_preprocessing.py**
+  - Data preprocessing for main model
+  - Accounts for the 25 actions (vasopressors, fluids)
+  - Accounts for the SOFA score
 
-- **ddqn_processing_2.py**
-  - Optimized version of the processing pipeline  
-  - Handles large datasets using chunked processing  
-  - Reduces memory usage for HPC environments  
+- **ddqn_score.py**
+  - Computes the comparison score for the DDQN model
 
 - **final_ddqn.py**
   - Contains the final DDQN model used for project  
@@ -334,7 +334,7 @@ Train DDQN
 
 ```
 python final_ddqn.py \
-  --inp sepsis_iql_actionvec_transitions.parquet
+  --data sepsis_iql_actionvec_transitions.parquet \
   --outdir ddqn_outputs
 ```
 
