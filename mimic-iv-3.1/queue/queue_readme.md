@@ -12,8 +12,6 @@ The queue simulation is **model-agnostic**: it does not assume DDQN, IQL, BCQ, B
 
 ---
 
-## 1. Preprocessing
-
 ### Script
 `preprocessing.py`
 
@@ -45,12 +43,12 @@ test.parquet
 
 These files are intended to be the common dataset used by all models.
 
-2. Model Training
+### Model Training
 
 All models use the common train.parquet. 
 Important: Since the preprocessing has changed, so all models need to be retrained using the new train.parquet before comparing their outputs.
 
-3. Generating Patient Priority Scores
+### Generating Patient Priority Scores
 
 Each model needs its own scoring script. Each scoring script should:
 
@@ -70,7 +68,7 @@ For the RL models, the priority score is currently intended to be derived from t
 
 Note: The existing queueing script may need small modifications to work with the scripts that will be written, particularly with variable values, and perhaps data formatwise. 
 
-4. How the Queue Simulation Works
+### How the Queue Simulation Works
 
 The simulation:
 
@@ -105,7 +103,7 @@ In particular, patient arrivals and treatment times are currently simulated rath
 
 The simulation variables should therefore be tested across a reasonable range rather than relying on a single arbitrary configuration.
 
-5. Current Simulation Parameters
+### Current Simulation Parameters
 
 Some parameters are currently set as defaults and have not yet been fully justified.
 
@@ -126,7 +124,7 @@ These values should be treated as current proof-of-concept values, not final exp
 
 For the final comparison, it will likely be necessary to run the simulation across multiple parameter settings and/or multiple random seeds.
 
-6. Running the Queue Simulation to see current version
+### Running the Queue Simulation to see current version
 
 Random scoring is included for testing the queue independently of a trained model.
 
@@ -147,7 +145,7 @@ python queue_simulation.py \
 
 The same process can be used for IQL, BCQ and BC.
 
-7. Queue Outputs
+### Queue Outputs
 
 The simulation currently produces:
 
@@ -197,7 +195,8 @@ Queue utilisation
 Treatment throughput
 Potential trade-off between overall waiting time and prioritisation of high-risk patients
 
-8. Current To-Do List
+### Current To-Do List
+
 Preprocessing / Models
  Retrain all models using the new train.parquet.
  Verify that the new test.parquet is compatible with all model testing code.
