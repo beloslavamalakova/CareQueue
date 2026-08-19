@@ -117,21 +117,21 @@ Some parameters are currently set as defaults and have not yet been fully justif
 
 Important parameters include:
 
-arrival_rate
+    arrival_rate
 
-service_hours
+    service_hours
 
-alpha
+    alpha
 
-seed
+    seed
 
 For example:
 
-arrival_rate = 2 patients/hour
+    arrival_rate = 2 patients/hour
 
-service_hours = 0.75 hours
+    service_hours = 0.75 hours
 
-alpha = 0.001
+    alpha = 0.001
 
 These values should be treated as current proof-of-concept values, not final experimental settings.
 
@@ -162,9 +162,9 @@ The same process can be used for IQL, BCQ and BC.
 
 The simulation currently produces:
 
-queue_results.parquet
+    queue_results.parquet
 
-queue_metrics.csv
+    queue_metrics.csv
 
 queue_results.parquet contains patient-level results such as:
 
@@ -184,53 +184,53 @@ Reward
 
 queue_metrics.csv contains aggregate metrics such as:
 
-Number of patients
+- Number of patients
 
-Mean waiting time
+- Mean waiting time
 
-Median waiting time
+- Median waiting time
 
-90th percentile waiting time
+- 90th percentile waiting time
 
-Maximum waiting time
+- Maximum waiting time
 
-Mean time in system
+- Mean time in system
 
-Mean priority score
+- Mean priority score
 
-Mean SOFA
+- Mean SOFA
 
 Note: The current metrics are only an initial implementation.
 
 The metrics have not yet been examined in enough depth to determine whether they are:
 
-Correctly implemented
+- Correctly implemented
 
-Sufficient for comparing the models
+- Sufficient for comparing the models
 
-Appropriate for the research question
+- Appropriate for the research question
 
-Fair across different scoring methods
+- Fair across different scoring methods
 
-This needs further work before using the queue simulation results as final evidence.
+- This needs further work before using the queue simulation results as final evidence.
 
 Potentially, we may also want metrics related to:
 
-Patient survival/mortality
+- Patient survival/mortality
 
-High-risk patient prioritisation
+- High-risk patient prioritisation
 
-Waiting time for high-risk patients
+- Waiting time for high-risk patients
 
-SOFA/severity-based prioritisation
+- SOFA/severity-based prioritisation
 
-Fairness of waiting times
+- Fairness of waiting times
 
-Queue utilisation
+- Queue utilisation
 
-Treatment throughput
+- Treatment throughput
 
-Potential trade-off between overall waiting time and prioritisation of high-risk patients
+- Potential trade-off between overall waiting time and prioritisation of high-risk patients
 
 ### Current To-Do List
 
