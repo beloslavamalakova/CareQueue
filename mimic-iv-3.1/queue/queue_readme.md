@@ -72,44 +72,44 @@ Note: The existing queueing script may need small modifications to work with the
 
 The simulation:
 
-Loads the test patients.
+    Loads the test patients.
 
-Uses the first observed state of each ICU stay as the patient's queue-entry state.
+    Uses the first observed state of each ICU stay as the patient's queue-entry state.
 
-Assigns each patient a priority score.
+    Assigns each patient a priority score.
 
-Simulates patient arrivals using a Poisson arrival process.
+    Simulates patient arrivals using a Poisson arrival process.
 
-Simulates treatment/service times using an exponential distribution.
+    Simulates treatment/service times using an exponential distribution.
 
-Adds patients to a priority queue when they arrive.
+    Adds patients to a priority queue when they arrive.
 
-Selects the patient with the highest effective priority when treatment becomes available.
+    Selects the patient with the highest effective priority when treatment becomes available.
 
-Records waiting time, treatment time, and time spent in the system.
+    Records waiting time, treatment time, and time spent in the system.
 
-Saves the resulting queue experience and summary metrics.
+    Saves the resulting queue experience and summary metrics.
 
 The current priority rule is:
 
-Effective Priority =
-    Model Score + α × Waiting Time
+    Effective Priority =
+        Model Score + α × Waiting Time
 
 where α controls how strongly waiting time affects prioritisation.
 
-Higher effective priority means the patient is treated first.
+    Higher effective priority means the patient is treated first.
 
-Earlier arrival time is used as a tie-breaker.
+    Earlier arrival time is used as a tie-breaker.
 
 Important: This Is Not a Live Simulation
 
-The current queue simulation is not intended to be a realistic live hospital simulation.
+    The current queue simulation is not intended to be a realistic live hospital simulation.
 
-It is primarily a framework for generating comparable queueing outcomes/metrics for different prioritisation models.
+    It is primarily a framework for generating comparable queueing outcomes/metrics for different prioritisation models.
 
-In particular, patient arrivals and treatment times are currently simulated rather than being driven by a real-time hospital system.
+    In particular, patient arrivals and treatment times are currently simulated rather than being driven by a real-time hospital system.
 
-The simulation variables should therefore be tested across a reasonable range rather than relying on a single arbitrary configuration.
+    The simulation variables should therefore be tested across a reasonable range rather than relying on a single arbitrary configuration.
 
 ### Current Simulation Parameters
 
@@ -168,19 +168,19 @@ The simulation currently produces:
 
 queue_results.parquet contains patient-level results such as:
 
-Arrival time
+    Arrival time
 
-Treatment start/end
+    Treatment start/end
 
-Waiting time
+    Waiting time
 
-Time in system
+    Time in system
 
-Priority score
+    Priority score
 
-SOFA score
+    SOFA score
 
-Reward
+    Reward
 
 queue_metrics.csv contains aggregate metrics such as:
 
