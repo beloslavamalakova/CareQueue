@@ -38,31 +38,34 @@ It:
 
 ### Outputs
 
-train.parquet
-test.parquet
+    train.parquet
+
+    test.parquet
 
 These files are intended to be the common dataset used by all models.
 
 ### Model Training
 
 All models use the common train.parquet. 
+
 Important: Since the preprocessing has changed, so all models need to be retrained using the new train.parquet before comparing their outputs.
 
 ### Generating Patient Priority Scores
 
 Each model needs its own scoring script. Each scoring script should:
 
-Input:
-    test.parquet
-    trained model/checkpoint
+    Input:
+        test.parquet
+        trained model/checkpoint
 
-Output:
-    [model]_scores.parquet
+    Output:
+        [model]_scores.parquet
 
 The output must contain at least:
 
-stay_id
-priority_score
+    stay_id
+    
+    priority_score
 
 For the RL models, the priority score is currently intended to be derived from the model's predicted Q-value.
 
