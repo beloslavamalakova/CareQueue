@@ -73,13 +73,21 @@ Note: The existing queueing script may need small modifications to work with the
 The simulation:
 
 Loads the test patients.
+
 Uses the first observed state of each ICU stay as the patient's queue-entry state.
+
 Assigns each patient a priority score.
+
 Simulates patient arrivals using a Poisson arrival process.
+
 Simulates treatment/service times using an exponential distribution.
+
 Adds patients to a priority queue when they arrive.
+
 Selects the patient with the highest effective priority when treatment becomes available.
+
 Records waiting time, treatment time, and time spent in the system.
+
 Saves the resulting queue experience and summary metrics.
 
 The current priority rule is:
@@ -110,14 +118,19 @@ Some parameters are currently set as defaults and have not yet been fully justif
 Important parameters include:
 
 arrival_rate
+
 service_hours
+
 alpha
+
 seed
 
 For example:
 
 arrival_rate = 2 patients/hour
+
 service_hours = 0.75 hours
+
 alpha = 0.001
 
 These values should be treated as current proof-of-concept values, not final experimental settings.
@@ -150,27 +163,41 @@ The same process can be used for IQL, BCQ and BC.
 The simulation currently produces:
 
 queue_results.parquet
+
 queue_metrics.csv
 
 queue_results.parquet contains patient-level results such as:
 
 Arrival time
+
 Treatment start/end
+
 Waiting time
+
 Time in system
+
 Priority score
+
 SOFA score
+
 Reward
 
 queue_metrics.csv contains aggregate metrics such as:
 
 Number of patients
+
 Mean waiting time
+
 Median waiting time
+
 90th percentile waiting time
+
 Maximum waiting time
+
 Mean time in system
+
 Mean priority score
+
 Mean SOFA
 
 Note: The current metrics are only an initial implementation.
@@ -178,8 +205,11 @@ Note: The current metrics are only an initial implementation.
 The metrics have not yet been examined in enough depth to determine whether they are:
 
 Correctly implemented
+
 Sufficient for comparing the models
+
 Appropriate for the research question
+
 Fair across different scoring methods
 
 This needs further work before using the queue simulation results as final evidence.
@@ -187,40 +217,47 @@ This needs further work before using the queue simulation results as final evide
 Potentially, we may also want metrics related to:
 
 Patient survival/mortality
+
 High-risk patient prioritisation
+
 Waiting time for high-risk patients
+
 SOFA/severity-based prioritisation
+
 Fairness of waiting times
+
 Queue utilisation
+
 Treatment throughput
+
 Potential trade-off between overall waiting time and prioritisation of high-risk patients
 
 ### Current To-Do List
 
 Preprocessing / Models
- Retrain all models using the new train.parquet.
- Verify that the new test.parquet is compatible with all model testing code.
- Write DDQN scoring script.
- Write IQL scoring script.
- Write BCQ scoring script.
- Write BC scoring script.
+- Retrain all models using the new train.parquet.
+- Verify that the new test.parquet is compatible with all model testing code.
+- Write DDQN scoring script.
+- Write IQL scoring script.
+- Write BCQ scoring script.
+- Write BC scoring script.
 
- Standardise all score outputs to:
+Standardise all score outputs to:
 
-stay_id
-priority_score
-Queue Simulation
- Test every model's score file with queue_simulation.py.
- Fix any variable/state-column mismatches between the scoring scripts and queue simulation.
- Check that the score direction is consistent across models.
- Review the current arrival-rate and service-time assumptions.
- Review the alpha waiting-time parameter.
- Run multiple random seeds where computationally feasible.
- Test a range of simulation parameter values.
-Metrics / Evaluation
- Thoroughly review the current metrics.
- Decide which metrics are actually appropriate for model comparison.
- Add any missing patient-outcome or prioritisation metrics.
- Determine how many simulation runs are needed for reliable comparisons.
- Consider confidence intervals / variability across simulation runs.
- Establish a consistent experimental setup so every model is evaluated under identical simulation conditions.
+- stay_id
+- priority_score
+- Queue Simulation
+    - Test every model's score file with queue_simulation.py.
+    - Fix any variable/state-column mismatches between the scoring scripts and queue simulation.
+    - Check that the score direction is consistent across models.
+    - Review the current arrival-rate and service-time assumptions.
+    - Review the alpha waiting-time parameter.
+    - Run multiple random seeds where computationally feasible.
+    - Test a range of simulation parameter values.
+- Metrics / Evaluation
+    - Thoroughly review the current metrics.
+    - Decide which metrics are actually appropriate for model comparison.
+    - Add any missing patient-outcome or prioritisation metrics.
+    - Determine how many simulation runs are needed for reliable comparisons.
+    - Consider confidence intervals / variability across simulation runs.
+    - Establish a consistent experimental setup so every model is evaluated under identical simulation conditions.
