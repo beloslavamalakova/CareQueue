@@ -1005,7 +1005,7 @@ def main():
     parser.add_argument(
         "--arrival_rate",
         type=float,
-        default=2,
+        default=1,
         help=(
             "Mean patient arrivals per hour."
         ),

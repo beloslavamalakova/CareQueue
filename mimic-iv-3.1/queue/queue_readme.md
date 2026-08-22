@@ -130,7 +130,7 @@ Important parameters include:
 
 For example:
 
-    arrival_rate = 2 patients/hour
+    arrival_rate = 1 patient/hour
 
     service_hours = 0.75 hours
 
