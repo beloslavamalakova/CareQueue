@@ -385,6 +385,39 @@ class PatientQueue:
 
         return selected_item[3]
 
+    def pop_fifo(self,) -> Patient:
+        """
+    FIFO baseline.
+
+    Select the patient who has been waiting the longest,
+    i.e. the patient with the earliest arrival time.
+
+    Model priority scores and alpha are ignored.
+        """
+
+        if not self._heap:
+            raise IndexError(
+                "Cannot pop from empty queue."
+            )
+
+        best_index = min(
+            range(len(self._heap)),
+            key=lambda i: (
+                self._heap[i][3].arrival_time,
+                self._heap[i][2],  # stable tie-breaker
+            ),
+        )
+
+        selected_item = self._heap.pop(
+            best_index
+        )
+
+        heapq.heapify(
+            self._heap
+        )
+
+        return selected_item[3]
+
     def empty(self) -> bool:
         return len(self._heap) == 0
 
@@ -540,6 +573,7 @@ def simulate_queue(
     visualize: bool = False,
     top_k: int = 10,
     alpha: float = 0.001,
+    queue_policy: str = "priority",
 ) -> list[QueueResult]:
 
     patients = sorted(
@@ -615,10 +649,16 @@ def simulate_queue(
 
             if current_patient is None:
 
-                current_patient = queue.pop(
-                    current_time=current_time,
-                    alpha=alpha,
-                )
+                if queue_policy == "fifo":
+
+                        current_patient = queue.pop_fifo()
+
+                else:
+
+                        current_patient = queue.pop(
+                            current_time=current_time,
+                            alpha=alpha,
+                        )
 
                 treatment_start = (
                     current_time
@@ -703,10 +743,16 @@ def simulate_queue(
 
             if not queue.empty():
 
-                current_patient = queue.pop(
-                    current_time=current_time,
-                    alpha=alpha,
-                )
+                if queue_policy == "fifo":
+
+                    current_patient = queue.pop_fifo()
+
+                else:
+
+                    current_patient = queue.pop(
+                        current_time=current_time,
+                        alpha=alpha,
+                    )
 
                 treatment_start = (
                     current_time
@@ -1032,6 +1078,20 @@ def main():
     )
 
     parser.add_argument(
+    "--queue_policy",
+    choices=[
+        "priority",
+        "fifo",
+    ],
+    default="priority",
+    help=(
+        "Queue selection policy. "
+        "'priority' uses model score + waiting time; "
+        "'fifo' treats patients in arrival order."
+    ),
+)
+
+    parser.add_argument(
         "--top_k",
         type=int,
         default=10,
@@ -1084,7 +1144,24 @@ def main():
 
     # Generate / load scores
 
-    if args.score_mode == "random":
+    if args.queue_policy == "fifo":
+
+        print(
+            "Queue policy    : FIFO"
+        )
+
+        score_df = pd.DataFrame(
+            {
+                "stay_id": patient_df["stay_id"].astype(int),
+                "priority_score": 0.0,
+            }
+        )
+
+    elif args.score_mode == "random":
+
+        print(
+            "Queue policy    : PRIORITY"
+        )
 
         print(
             "Score mode      : RANDOM"
@@ -1100,6 +1177,10 @@ def main():
         )
 
     else:
+
+        print(
+            "Queue policy    : PRIORITY"
+        )
 
         if args.score_file is None:
             raise ValueError(
@@ -1120,7 +1201,6 @@ def main():
                 args.score_file
             )
         )
-
     # Create patients
 
     patients = create_patients(
@@ -1140,11 +1220,12 @@ def main():
     )
 
     results = simulate_queue(
-        patients=patients,
-        visualize=args.visualize_queue,
-        top_k=args.top_k,
-        alpha=args.alpha,
-    )
+    patients=patients,
+    visualize=args.visualize_queue,
+    top_k=args.top_k,
+    alpha=args.alpha,
+    queue_policy=args.queue_policy,
+)
 
 
     # Calculating metrics
